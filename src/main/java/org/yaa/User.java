@@ -8,6 +8,8 @@ public abstract class User {
     protected String userName;
     protected List<Item> borrowedItems;
 
+    public abstract int getBorrowLimit();
+
     public User(String userId, String userName) {
         this.userId = userId;
         this.userName = userName;
@@ -15,12 +17,12 @@ public abstract class User {
     }
 
     public void borrowItem(Item item) {
-        if (!borrowedItems.contains(item)) {
+        if (!borrowedItems.contains(item) && borrowedItems.size() < getBorrowLimit()) {
             borrowedItems.add(item);
         }
     }
     public void returnItem(Item item) {
-        if (!borrowedItems.contains(item)) {
+        if (borrowedItems.contains(item)) {
             borrowedItems.remove(item);
         }
     }
