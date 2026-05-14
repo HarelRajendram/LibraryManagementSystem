@@ -1,5 +1,8 @@
 package org.yaa;
 
+import lombok.Getter;
+
+@Getter
 public class Magazine extends Item {
     private String title;
     private String issueNumber;

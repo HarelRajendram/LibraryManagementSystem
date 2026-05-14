@@ -7,4 +7,8 @@ public class Constants {
 
     public static final String BOOKS_CSV_PATH = "src/main/resources/books.csv";
     public static final String USERS_CSV_PATH = "src/main/resources/users.csv";
+
+    public static final String USERS_BACKUP_PATH = "src/main/resources/users_backup.csv";
+    public static final String ITEMS_BACKUP_PATH = "src/main/resources/items_backup.csv";
+
 }

@@ -5,8 +5,9 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public abstract class User {
-    @Getter protected String userId;
+    protected String userId;
     protected String userName;
     protected List<Item> borrowedItems;
 

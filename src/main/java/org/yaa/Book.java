@@ -1,5 +1,8 @@
 package org.yaa;
 
+import lombok.Getter;
+
+@Getter
 public class Book extends Item {
     private String ISBN;
     private String title;
