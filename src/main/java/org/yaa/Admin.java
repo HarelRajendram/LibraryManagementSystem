@@ -24,6 +24,5 @@ public class Admin extends User implements Reportable {
                     .append(")");
         }
         return sb.toString();
-
     }
 }
