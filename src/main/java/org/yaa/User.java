@@ -1,10 +1,12 @@
 package org.yaa;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class User {
-    protected String userId;
+    @Getter protected String userId;
     protected String userName;
     protected List<Item> borrowedItems;
 
@@ -16,6 +18,11 @@ public abstract class User {
         this.borrowedItems = new ArrayList<>();
     }
 
+    /**
+     * adds the book to the users list of items
+     * @param item the item that the user is going to borrow
+     * @throws LibraryException if the books the user borrowed is above the limit or not
+     */
     public void borrowItem(Item item) throws LibraryException {
         if (borrowedItems.size() >= getBorrowLimit()) {
             throw new LibraryException("book limit reached");
@@ -26,6 +33,12 @@ public abstract class User {
         borrowedItems.add(item);
         item.setItemStatus(Item.ItemStatus.BORROWED);
     }
+
+    /**
+     * removes the book in the users list of items
+     * @param item the item that the user is going to remove
+     * @throws LibraryException if the books the user borrowed cannot be removed
+     */
     public void returnItem(Item item) throws LibraryException {
         if (!(borrowedItems.contains(item))) {
             throw new LibraryException("user did not borrow the item");
