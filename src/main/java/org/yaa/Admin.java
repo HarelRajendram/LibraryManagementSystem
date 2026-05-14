@@ -8,12 +8,12 @@ public class Admin extends User implements Reportable {
 
     @Override
     public int getBorrowLimit() {
-        return Constants.MAX_ITEMS_TEACHER;
+        return Integer.MAX_VALUE;
     }
-    public void backupData() {
+    public void backupData() throws LibraryException {
 
     }
     public String generateReport() {
-
+        return "Report not implemented but soon";
     }
 }

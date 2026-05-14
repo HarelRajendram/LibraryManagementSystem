@@ -1,9 +1,18 @@
 package org.yaa;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class Item {
-    protected String itemId;
+    @Getter protected String itemId;
+    @Getter @Setter
     protected ItemStatus itemStatus;
     public static int nextId = 1;
+
+    public Item() {
+        this.itemId = String.format("%04d", nextId++);
+        this.itemStatus = ItemStatus.IN_STORE;
+    }
 
     public enum ItemStatus{
         BORROWED, IN_STORE, LOST

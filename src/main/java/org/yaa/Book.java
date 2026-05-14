@@ -1,12 +1,14 @@
 package org.yaa;
 
-public class Book {
+public class Book extends Item {
     private String ISBN;
     private String title;
     private String author;
     private Genre genre;
 
-    public Book(String title, String author, Genre genre) {
+    public Book(String ISBN, String title, String author, Genre genre) {
+        super();
+        this.ISBN = ISBN;
         this.title = title;
         this.author = author;
         this.genre = genre;

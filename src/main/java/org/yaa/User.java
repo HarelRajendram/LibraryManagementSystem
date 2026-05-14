@@ -16,14 +16,24 @@ public abstract class User {
         this.borrowedItems = new ArrayList<>();
     }
 
-    public void borrowItem(Item item) {
-        if (!borrowedItems.contains(item) && borrowedItems.size() < getBorrowLimit()) {
-            borrowedItems.add(item);
+    public void borrowItem(Item item) throws LibraryException {
+        if (borrowedItems.size() >= getBorrowLimit()) {
+            throw new LibraryException("book limit reached");
         }
+        if (item.getItemStatus() == Item.ItemStatus.BORROWED) {
+            throw new LibraryException("book is already borrowed");
+        }
+        borrowedItems.add(item);
+        item.setItemStatus(Item.ItemStatus.BORROWED);
     }
-    public void returnItem(Item item) {
-        if (borrowedItems.contains(item)) {
-            borrowedItems.remove(item);
+    public void returnItem(Item item) throws LibraryException {
+        if (!(borrowedItems.contains(item))) {
+            throw new LibraryException("user did not borrow the item");
         }
+        if (item.getItemStatus() == Item.ItemStatus.IN_STORE) {
+            throw new LibraryException("book cannot be borrowed");
+        }
+        borrowedItems.remove(item);
+        item.setItemStatus(Item.ItemStatus.IN_STORE);
     }
 }
