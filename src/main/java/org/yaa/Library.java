@@ -2,17 +2,17 @@ package org.yaa;
 
 import lombok.Getter;
 
+import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+@Getter
 public class Library {
-
-    @Getter
     private List<Item> listItems;
-
-    @Getter
     private List<User> listUser;
+    private Map<String, Item> itemMap = new HashMap<>();
+    private Map<String, User> userMap = new HashMap<>();
+
 
     public Library() {
         this.listItems = new ArrayList<>();
@@ -20,21 +20,11 @@ public class Library {
     }
 
     private User findUserById(String userId) {
-        for (User user : listUser) {
-            if (user.getUserId().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
+        return userMap.get(userId);
     }
 
     public Item findItemById(String itemId) {
-        for (Item item : listItems) {
-            if (item.getItemId().equals(itemId)) {
-                return item;
-            }
-        }
-        return null;
+        return itemMap.get(itemId);
     }
 
     public void sortItems(Sorting strategy) {
@@ -119,7 +109,6 @@ public class Library {
         }
         return searchByAuthorRecursiveHelper(author, index + 1, results);
     }
-
     public List<Item> streamSearchTitle(String title) {
         return listItems.stream()
                 .filter(item -> item instanceof Book)
@@ -128,7 +117,6 @@ public class Library {
                 .map(book -> (Item) book)
                 .toList();
     }
-
     public List<Item> streamSearchAuthor(String author) {
         return listItems.stream()
                 .filter(item -> item instanceof Book)
@@ -137,7 +125,6 @@ public class Library {
                 .map(book -> (Item) book)
                 .toList();
     }
-
     public void backupData() throws LibraryException {
         backupUsers();
         backupItems();
@@ -145,7 +132,6 @@ public class Library {
 
     private void backupUsers() throws LibraryException {
         try (FileWriter writer = new FileWriter(Constants.USERS_BACKUP_PATH)) {
-
             for (User user : listUser) {
                 String userType = user.getClass().getSimpleName();
 
@@ -153,21 +139,17 @@ public class Library {
                 for (Item item : user.getBorrowedItems()) {
                     borrowedIds.add(item.getItemId());
                 }
-
                 writer.write(user.getUserId() + "," +
                         user.getUserName() + "," +
                         userType + "," +
                         String.join(";", borrowedIds) + "\n");
             }
-
         } catch (Exception e) {
             throw new LibraryException("Failed to backup users");
         }
     }
-
     private void backupItems() throws LibraryException {
         try (FileWriter writer = new FileWriter(Constants.ITEMS_BACKUP_PATH)) {
-
             for (Item item : listItems) {
 
                 if (item instanceof Book book) {
@@ -176,14 +158,12 @@ public class Library {
                             book.getAuthor() + "," +
                             book.getGenre() + "," +
                             book.getItemStatus() + "\n");
-
                 } else if (item instanceof DVD dvd) {
                     writer.write(dvd.getItemId() + "," +
                             dvd.getTitle() + "," +
                             dvd.getDVDDirector() + "," +
                             dvd.getDVDDuration() + "," +
                             dvd.getItemStatus() + "\n");
-
                 } else if (item instanceof Magazine mag) {
                     writer.write(mag.getItemId() + "," +
                             mag.getTitle() + "," +
@@ -192,9 +172,105 @@ public class Library {
                             mag.getItemStatus() + "\n");
                 }
             }
-
         } catch (Exception e) {
             throw new LibraryException("Failed to backup items");
+        }
+    }
+    public void loadItemsCSVFiles(String filePath) throws LibraryException {
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(",");
+
+                String type = parts[0].trim();
+                String id = parts[1].trim();
+                String isbnOrTitle = parts[2].trim();
+                String titleOrDirector = parts[3].trim();
+                String authorOrDuration = parts[4].trim();
+                String genreOrPublisher = parts[5].trim();
+                Item.ItemStatus status = Item.ItemStatus.valueOf(parts[6].trim());
+
+                Item item;
+
+                switch (type) {
+
+                    case "Book":
+                        item = new Book(
+                                id, isbnOrTitle, titleOrDirector, authorOrDuration,
+                                Book.Genre.valueOf(genreOrPublisher)
+                        );
+                        break;
+
+                    case "DVD":
+                        item = new DVD( id, isbnOrTitle, titleOrDirector,
+                                Integer.parseInt(authorOrDuration)
+                        );
+                        break;
+
+                    case "Magazine":
+                        item = new Magazine(id, isbnOrTitle,
+                                Integer.parseInt(titleOrDirector),
+                                authorOrDuration
+                        );
+                        break;
+
+                    default:
+                        continue;
+                }
+                item.setItemStatus(status);
+                listItems.add(item);
+                itemMap.put(item.getItemId(), item);
+            }
+
+        } catch (Exception e) {
+            throw new LibraryException("Failed to load items CSV");
+        }
+    }
+
+    public void loadUsersCSVFiles(String filePath) throws LibraryException {
+        try(Scanner scanner = new Scanner(new File(filePath))) {
+
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(",");
+
+                String id = parts[0].trim();
+                String name = parts[1].trim();
+                String type = parts[2].trim();
+                String borrowedItems = parts.length > 3 ? parts[3] : "";
+                User user;
+
+                switch (type) {
+                    case "Student":
+                        user = new Student(id, name);
+                        break;
+
+                    case "Teacher":
+                        user = new Teacher(id, name);
+                        break;
+
+                    case "Admin":
+                        user = new Admin(id, name);
+                        break;
+
+                    default:
+                        continue;
+                }
+                listUser.add(user);
+                userMap.put(user.getUserId(), user);
+
+                if (!(borrowedItems.isEmpty())) {
+                    for (String itemId : borrowedItems.split(";")) {
+                        Item item = findItemById(itemId);
+                        if (item != null) {
+                            item.setItemStatus(Item.ItemStatus.BORROWED);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new LibraryException("Fsiled to load items CSV");
         }
     }
 }

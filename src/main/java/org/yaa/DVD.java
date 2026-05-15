@@ -14,4 +14,11 @@ public class DVD extends Item {
         this.DVDDirector = DVDDirector;
         this.DVDDuration = DVDDuration;
     }
+    public DVD(String itemId, String title, String DVDDirector, int DVDDuration) {
+        super(itemId);
+        this.title = title;
+        this.DVDDirector = DVDDirector;
+        this.DVDDuration = DVDDuration;
+    }
+
 }
