@@ -34,6 +34,12 @@ public class Library {
         listUser.sort(strategy::compare);
     }
 
+    /**
+     * borrows item to the user
+     * @param userId the user who is borrowing
+     * @param itemId the item that is being borrowed
+     * @throws LibraryException if the user or item does not exist
+     */
     public void borrowItem(String userId, String itemId) throws LibraryException {
         Item item = findItemById(itemId);
         if (item == null) throw new LibraryException("Item does not exist");
@@ -44,6 +50,12 @@ public class Library {
         user.borrowItem(item);
     }
 
+    /**
+     * returns the item
+     * @param userId the user who is returning
+     * @param itemId the item that is being returned
+     * @throws LibraryException if item or user does not exist
+     */
     public void returnItem(String userId, String itemId) throws LibraryException {
         Item item = findItemById(itemId);
         if (item == null) throw new LibraryException("Item does not exist");
@@ -54,6 +66,11 @@ public class Library {
         user.returnItem(item);
     }
 
+    /**
+     * find the title that the user is trying to find
+     * @param title the title that we are trying to find
+     * @return the found title
+     */
     public List<Item> searchByTitle(String title) {
         List<Item> results = new ArrayList<>();
         for (Item item : listItems) {
@@ -66,6 +83,11 @@ public class Library {
         return results;
     }
 
+    /**
+     * find the author that the user is trying to find
+     * @param author the author that we are trying to find
+     * @return the found author
+     */
     public List<Item> searchByAuthor(String author) {
         List<Item> results = new ArrayList<>();
         for (Item item : listItems) {
@@ -82,6 +104,13 @@ public class Library {
         return searchByTitleRecursiveHelper(title, 0, new ArrayList<>());
     }
 
+    /**
+     * uses recursion to find the title
+     * @param title the title that is being searched
+     * @param index the index to find the title
+     * @param results finds the title searched in
+     * @return the title that was searched
+     */
     private List<Item> searchByTitleRecursiveHelper(String title, int index, List<Item> results) {
         if (index >= listItems.size()) return results;
 
@@ -94,10 +123,22 @@ public class Library {
         return searchByTitleRecursiveHelper(title, index + 1, results);
     }
 
+    /**
+     * helper method to help find author
+     * @param author the author we are searching for
+     * @return the found author
+     */
     public List<Item> searchByAuthorRecursion(String author) {
         return searchByAuthorRecursiveHelper(author, 0, new ArrayList<>());
     }
 
+    /**
+     * uses recursion to find the author
+     * @param author the autor that is being searched
+     * @param index the index to find the author
+     * @param results finds the author searched in
+     * @return the author that was searched
+     */
     private List<Item> searchByAuthorRecursiveHelper(String author, int index, List<Item> results) {
         if (index >= listItems.size()) return results;
 
@@ -109,6 +150,12 @@ public class Library {
         }
         return searchByAuthorRecursiveHelper(author, index + 1, results);
     }
+
+    /**
+     * searches title with stream
+     * @param title the title that is being searched
+     * @return the searched title
+     */
     public List<Item> streamSearchTitle(String title) {
         return listItems.stream()
                 .filter(item -> item instanceof Book)
@@ -117,6 +164,12 @@ public class Library {
                 .map(book -> (Item) book)
                 .toList();
     }
+
+    /**
+     * searches author with stream
+     * @param author the author that is being searched
+     * @return the searched author
+     */
     public List<Item> streamSearchAuthor(String author) {
         return listItems.stream()
                 .filter(item -> item instanceof Book)
@@ -130,6 +183,10 @@ public class Library {
         backupItems();
     }
 
+    /**
+     * a backup file to add the information of the user
+     * @throws LibraryException if the backup failed to work
+     */
     private void backupUsers() throws LibraryException {
         try (FileWriter writer = new FileWriter(Constants.USERS_BACKUP_PATH)) {
             for (User user : listUser) {
@@ -148,6 +205,11 @@ public class Library {
             throw new LibraryException("Failed to backup users");
         }
     }
+
+    /**
+     * a backup file to add the information of the item
+     * @throws LibraryException if the backup failed to work
+     */
     private void backupItems() throws LibraryException {
         try (FileWriter writer = new FileWriter(Constants.ITEMS_BACKUP_PATH)) {
             for (Item item : listItems) {
@@ -176,6 +238,12 @@ public class Library {
             throw new LibraryException("Failed to backup items");
         }
     }
+
+    /**
+     * loads the items details in a csv file
+     * @param filePath the file where the details are going to added to
+     * @throws LibraryException if there is no file to add to
+     */
     public void loadItemsCSVFiles(String filePath) throws LibraryException {
         try (Scanner scanner = new Scanner(new File(filePath))) {
 
@@ -228,6 +296,11 @@ public class Library {
         }
     }
 
+    /**
+     * loads the users details in a csv file
+     * @param filePath the file where the details are going to added to
+     * @throws LibraryException if there is no file to add to
+     */
     public void loadUsersCSVFiles(String filePath) throws LibraryException {
         try(Scanner scanner = new Scanner(new File(filePath))) {
 

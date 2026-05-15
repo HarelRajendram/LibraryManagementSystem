@@ -26,6 +26,11 @@ public class Book extends Item {
         this.genre = genre;
     }
 
+    /**
+     * check if the book has a valid ISBN number r
+     * @param ISBN the ISBN that is being verified
+     * @return the boolean value if the ISBN is valid or not
+     */
     public static boolean isValidISBN(String ISBN) {
         if (ISBN.length() != 13) return false;
 
@@ -48,6 +53,6 @@ public class Book extends Item {
         return sum % 10 == 0;
     }
     public enum Genre {
-        HISTORY, HORROR, SCI_FI, ROMANCE, SCIENCE, MYSTERY, THRILLER
+        HISTORY, HORROR, SCI_FI, ROMANCE, SCIENCE, MYSTERY, THRILLER, FANTASY
     }
 }
