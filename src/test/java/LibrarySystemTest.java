@@ -203,7 +203,6 @@ public class LibrarySystemTest {
         Library lib = new Library();
         Student s1 = new Student("S1", "Zed");
         Student s2 = new Student("S2", "Adam");
-
         lib.getListUser().add(s1);
         lib.getListUser().add(s2);
         lib.sortUsers(new SortUserByName());
