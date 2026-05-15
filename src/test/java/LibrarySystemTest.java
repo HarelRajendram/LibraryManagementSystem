@@ -206,7 +206,6 @@ public class LibrarySystemTest {
 
         lib.getListUser().add(s1);
         lib.getListUser().add(s2);
-
         lib.sortUsers(new SortUserByName());
 
         assertEquals("Adam", lib.getListUser().get(0).getUserName());
